@@ -1,16 +1,29 @@
 package asn1.ber
 
-abstract class DataValue(val classAndPc: Byte, val tag: Int) {
+class ClassAndPC(val firstByte: Byte) {
+  def this(byteAsInt: Int) = this(byteAsInt.toByte)
+  def isApplication = (firstByte & Ber.Private) == Ber.Application
+  def isContextSpecific = (firstByte & Ber.Private) == Ber.ContextSpecific
+  def isPrivate = (firstByte & Ber.Private) == Ber.Private
+  def isConstructed = (firstByte & Ber.Constructed) == Ber.Constructed
+  def isPrimitive = (firstByte & Ber.Constructed) != Ber.Constructed
+}
+
+object ClassAndPC {
+  def apply(idByte: Byte) = new ClassAndPC(idByte)
+}
+
+abstract class DataValue(val classAndPc: ClassAndPC, val tag: Int) {
   def toBytes: Seq[Byte]
 }
 
 object Ber {
 
-  val Universal: Byte = 0x00
-  val Constructed     = 0x20
-  val Application     = 0x40
-  val ContextSpecific = 0x80
-  val Private         = 0xC0
+  val Universal: Byte       = 0x00
+  val Constructed: Byte     = 0x20
+  val Application: Byte     = 0x40
+  val ContextSpecific: Byte = 0x80.toByte
+  val Private: Byte         = 0xC0.toByte
 
   // Universal tag values.
   // - Primitive
@@ -35,11 +48,9 @@ object Ber {
    * @return The class and P/C bits from the first octet, the tag number separate from those
    *         and remaining octets
    */
-  def decodeId(idOctets: Seq[Byte]): (Byte, Int, Seq[Byte]) = {
-    val firstOctet= unsigned(idOctets.head)
-    val classAndPc = (firstOctet & 0xE0).toByte
-    val tag = firstOctet & 0x1F
-    (classAndPc, tag, idOctets.tail)
+  def decodeId(idOctets: Seq[Byte]): (ClassAndPC, Int, Seq[Byte]) = {
+    val firstOctet = unsigned(idOctets.head)
+    (new ClassAndPC(firstOctet), firstOctet & 0x1F, idOctets.tail)
   }
 
   /**
@@ -67,12 +78,12 @@ object Ber {
    * Decodes the value octets of a BER-encoded data value.
    *
    * @param valueOctets Octets containing only the value
-   * @param classAndPc Octet with the class and P/C bits from the identifier octet(s)
+   * @param classAndPc Class and primitive/constructed information from the identifier octet(s)
    * @param tag Tag of this value
    * @return The decoded data value
    */
-  def decodeValue(valueOctets: Seq[Byte], classAndPc: Byte, tag: Int): DataValue = {
-    if ((classAndPc & Constructed) != 0x00)
+  def decodeValue(valueOctets: Seq[Byte], classAndPc: ClassAndPC, tag: Int): DataValue = {
+    if (classAndPc.isConstructed)
     // Constructed data value.
       ???
     else
@@ -100,8 +111,4 @@ object Ber {
     (decodeValue(valueOctets, classAndPc, tag), remainder)
   }
 
-
-  def constructed(tag: Int) = tag + Constructed
-  def applicationId(tag: Int) = tag + Application
-  def contextSpecific(tag: Int) = tag + ContextSpecific
 }
