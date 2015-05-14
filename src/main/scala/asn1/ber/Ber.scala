@@ -1,12 +1,13 @@
 package asn1.ber
 
-class ClassAndPC(val firstByte: Byte) {
+class ClassAndPC(val byte: Byte) {
   def this(byteAsInt: Int) = this(byteAsInt.toByte)
-  def isApplication = (firstByte & Ber.Private) == Ber.Application
-  def isContextSpecific = (firstByte & Ber.Private) == Ber.ContextSpecific
-  def isPrivate = (firstByte & Ber.Private) == Ber.Private
-  def isConstructed = (firstByte & Ber.Constructed) == Ber.Constructed
-  def isPrimitive = (firstByte & Ber.Constructed) != Ber.Constructed
+  def isApplication = (byte & Ber.Private) == Ber.Application
+  def isContextSpecific = (byte & Ber.Private) == Ber.ContextSpecific
+  def isPrivate = (byte & Ber.Private) == Ber.Private
+  def isConstructed = (byte & Ber.Constructed) == Ber.Constructed
+  def isPrimitive = (byte & Ber.Constructed) != Ber.Constructed
+  def toBytes = Seq(byte)
 }
 
 object ClassAndPC {
@@ -90,7 +91,7 @@ object Ber {
     // Primitive data value.
       tag match {
         case Boolean => BerBoolean.decode(classAndPc, valueOctets)
-//        case Integer => BerInteger.decode(classAndPc, valueOctets)
+        case Integer => BerInteger.decode(classAndPc, valueOctets)
 //        case Enumerated => BerEnumerated.decode(classAndPc, valueOctets)
 //        case OctetString => BerOctetString.decode(classAndPc, valueOctets)
 //        case Null => BerNull(classAndPc, valueOctets)
