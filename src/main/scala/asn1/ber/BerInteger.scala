@@ -1,7 +1,7 @@
 package asn1.ber
 
-class BerInteger(classAndPc: ClassAndPC, val value: BigInt) extends DataValue(classAndPc, Ber.Integer) {
-  def this(value: BigInt) = this(ClassAndPC(Ber.Universal), value)
+class BerInteger(classAndPc: ClassAndPC, tag: Int, val value: BigInt) extends DataValue(classAndPc, tag) {
+  def this(value: BigInt) = this(ClassAndPC(Ber.Universal), Ber.Integer, value)
   override def toBytes = ???
   override def equals(other: Any) = other match {
     case that: BerInteger => this.value == that.value
@@ -17,7 +17,7 @@ object BerInteger {
   def apply(value: BigInt) = new BerInteger(value)
 
   // This code is adapted from the Ruby version in the net-ldap library.
-  def decode(classAndPc: ClassAndPC, valueOctets: Seq[Byte]): DataValue = {
+  def decode(classAndPc: ClassAndPC, tag: Int, valueOctets: Seq[Byte]): DataValue = {
     // First bit indicates if the integer is negative.
     val negative = (valueOctets.head & 0x80) != 0x00
     // Read bytes, accumulating an unsigned value.
@@ -36,5 +36,5 @@ object BerInteger {
     BerInteger(value)
   }
 
-  def decode(valueOctets: Seq[Byte]): DataValue = decode(ClassAndPC(Ber.Universal), valueOctets)
+  def decode(classAndPC: ClassAndPC, valueOctets: Seq[Byte]): DataValue = decode(classAndPC, Ber.Integer, valueOctets)
 }

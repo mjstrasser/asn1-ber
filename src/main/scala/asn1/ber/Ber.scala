@@ -92,7 +92,7 @@ object Ber {
       tag match {
         case Boolean => BerBoolean.decode(classAndPc, valueOctets)
         case Integer => BerInteger.decode(classAndPc, valueOctets)
-//        case Enumerated => BerEnumerated.decode(classAndPc, valueOctets)
+        case Enumerated => BerEnumerated.decode(classAndPc, valueOctets)
 //        case OctetString => BerOctetString.decode(classAndPc, valueOctets)
 //        case Null => BerNull(classAndPc, valueOctets)
 //        case _ => BerBytes(classAndPc, tag, valueOctets)
@@ -100,7 +100,7 @@ object Ber {
   }
 
   /**
-    * Decodes a BER-encoded data value.
+   * Decodes a BER-encoded data value.
    *
    * @param octets Octets containing at least one complete data value
    * @return The decoded data value and any remaining octets
