@@ -2,6 +2,7 @@ package asn1.ber
 
 class ClassAndPC(val byte: Byte) {
   def this(byteAsInt: Int) = this(byteAsInt.toByte)
+  def isUniversal = (byte & 0xE0) == Ber.Universal
   def isApplication = (byte & Ber.Private) == Ber.Application
   def isContextSpecific = (byte & Ber.Private) == Ber.ContextSpecific
   def isPrivate = (byte & Ber.Private) == Ber.Private
@@ -18,7 +19,7 @@ class ClassAndPC(val byte: Byte) {
 }
 
 object ClassAndPC {
-  def apply(idByte: Byte) = new ClassAndPC(idByte)
+  def apply(idByte: Byte) = new ClassAndPC((idByte & 0xE0).toByte)
 }
 
 abstract class DataValue(val classAndPc: ClassAndPC, val tag: Int) {
@@ -30,6 +31,7 @@ object Ber {
   val Universal: Byte       = 0x00
   val Constructed: Byte     = 0x20
   val Application: Byte     = 0x40
+  val AppConstructed:  Byte = 0x60
   val ContextSpecific: Byte = 0x80.toByte
   val Private: Byte         = 0xC0.toByte
 
@@ -58,7 +60,7 @@ object Ber {
    */
   def decodeId(idOctets: Seq[Byte]): (ClassAndPC, Int, Seq[Byte]) = {
     val firstOctet = unsigned(idOctets.head)
-    (new ClassAndPC(firstOctet), firstOctet & 0x1F, idOctets.tail)
+    (ClassAndPC(firstOctet), firstOctet & 0x1F, idOctets.tail)
   }
 
   /**
@@ -94,8 +96,8 @@ object Ber {
     if (classAndPc.isConstructed)
       // Constructed data value.
       BerConstructed.decode(classAndPc, tag, valueOctets)
-    else
-      // Primitive data value.
+    else if (classAndPc.isUniversal)
+      // Universal, primitive data value.
       tag match {
         case EndOfContent => BerEndOfContent
         case Boolean => BerBoolean.decode(classAndPc, valueOctets)
@@ -105,6 +107,8 @@ object Ber {
         case Enumerated => BerEnumerated.decode(classAndPc, valueOctets)
         case _ => BerBytes(classAndPc, tag, valueOctets)
       }
+    else
+      BerBytes(classAndPc, tag, valueOctets)
   }
 
   /**

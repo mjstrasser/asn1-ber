@@ -17,7 +17,7 @@ object BerInteger {
   def apply(value: BigInt) = new BerInteger(value)
 
   // This code is adapted from the Ruby version in the net-ldap library.
-  def decode(classAndPc: ClassAndPC, tag: Int, valueOctets: Seq[Byte]): DataValue = {
+  def decodeValue(valueOctets: Seq[Byte]): BigInt = {
     // First bit indicates if the integer is negative.
     val negative = (valueOctets.head & 0x80) != 0x00
     // Read bytes, accumulating an unsigned value.
@@ -32,9 +32,9 @@ object BerInteger {
     }
     val unsigned = readOctet(valueOctets, 0)
     // Correct for sign and return the value.
-    val value = if (negative) (unsigned + 1) * -1 else unsigned
-    BerInteger(value)
+    if (negative) (unsigned + 1) * -1 else unsigned
   }
 
-  def decode(classAndPC: ClassAndPC, valueOctets: Seq[Byte]): DataValue = decode(classAndPC, Ber.Integer, valueOctets)
+  def decode(classAndPC: ClassAndPC, valueOctets: Seq[Byte]): DataValue =
+    new BerInteger(classAndPC, Ber.Integer, decodeValue(valueOctets))
 }

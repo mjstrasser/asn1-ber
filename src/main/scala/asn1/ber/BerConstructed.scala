@@ -8,7 +8,7 @@ class BerConstructed(classAndPc: ClassAndPC, tag: Int, val value: Seq[DataValue]
   }
   override def hashCode = 41 * (41 * (classAndPc.hashCode + 41) + tag.hashCode) + value.hashCode
   def canEqual(other: Any) = other.isInstanceOf[BerConstructed]
-  override def toString = s"BerConstructed($value)"
+  override def toString = s"BerConstructed($classAndPc,$tag,$value)"
 }
 
 object BerConstructed {

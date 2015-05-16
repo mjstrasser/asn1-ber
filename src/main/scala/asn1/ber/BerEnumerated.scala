@@ -16,5 +16,6 @@ object BerEnumerated {
 
   def apply(value: Int) = new BerEnumerated(value)
 
-  def decode(classAndPC: ClassAndPC, valueOctets: Seq[Byte]) = BerInteger.decode(classAndPC, Ber.Enumerated, valueOctets)
+  def decode(classAndPC: ClassAndPC, valueOctets: Seq[Byte]) =
+    new BerEnumerated(classAndPC, BerInteger.decodeValue(valueOctets))
 }
