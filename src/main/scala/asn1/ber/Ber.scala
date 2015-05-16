@@ -94,7 +94,7 @@ object Ber {
         case Integer => BerInteger.decode(classAndPc, valueOctets)
         case Enumerated => BerEnumerated.decode(classAndPc, valueOctets)
         case OctetString => BerOctetString.decode(classAndPc, valueOctets)
-//        case Null => BerNull(classAndPc, valueOctets)
+        case Null => BerNull
 //        case _ => BerBytes(classAndPc, tag, valueOctets)
       }
   }
