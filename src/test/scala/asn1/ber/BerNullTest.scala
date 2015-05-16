@@ -8,4 +8,8 @@ class BerNullTest extends FlatSpec {
      assert(Ber.decode(Seq(5, 0)) == (BerNull, Seq()))
    }
 
+  "BerEndOfContent" should "be decoded correctly" in {
+     assert(Ber.decode(Seq(0, 0)) == (BerEndOfContent, Seq()))
+  }
+
  }

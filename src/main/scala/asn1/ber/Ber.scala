@@ -90,12 +90,13 @@ object Ber {
     else
     // Primitive data value.
       tag match {
+        case EndOfContent => BerEndOfContent
         case Boolean => BerBoolean.decode(classAndPc, valueOctets)
         case Integer => BerInteger.decode(classAndPc, valueOctets)
-        case Enumerated => BerEnumerated.decode(classAndPc, valueOctets)
         case OctetString => BerOctetString.decode(classAndPc, valueOctets)
         case Null => BerNull
-//        case _ => BerBytes(classAndPc, tag, valueOctets)
+        case Enumerated => BerEnumerated.decode(classAndPc, valueOctets)
+        case _ => BerBytes(classAndPc, tag, valueOctets)
       }
   }
 
@@ -108,6 +109,8 @@ object Ber {
   def decode(octets: Seq[Byte]): (DataValue, Seq[Byte]) = {
     val (classAndPc, tag, idTail) = decodeId(octets)
     val (length, lengthTail) = decodeLength(idTail)
+    if (length > lengthTail.length)
+      throw new IllegalArgumentException("Insufficient octets provided for specified length")
     val (valueOctets, remainder) = lengthTail.splitAt(length)
     (decodeValue(valueOctets, classAndPc, tag), remainder)
   }
