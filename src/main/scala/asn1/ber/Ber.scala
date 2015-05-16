@@ -8,6 +8,13 @@ class ClassAndPC(val byte: Byte) {
   def isConstructed = (byte & Ber.Constructed) == Ber.Constructed
   def isPrimitive = (byte & Ber.Constructed) != Ber.Constructed
   def toBytes = Seq(byte)
+  override def equals(other: Any) = other match {
+    case that: ClassAndPC => this.byte == that.byte
+    case _ => false
+  }
+  override def hashCode = 41 * (byte.hashCode + 41)
+  def canEqual(other: Any) = other.isInstanceOf[ClassAndPC]
+  override def toString = s"ClassAndPC($byte)"
 }
 
 object ClassAndPC {
@@ -78,17 +85,17 @@ object Ber {
   /**
    * Decodes the value octets of a BER-encoded data value.
    *
-   * @param valueOctets Octets containing only the value
    * @param classAndPc Class and primitive/constructed information from the identifier octet(s)
    * @param tag Tag of this value
+   * @param valueOctets Octets containing only the value
    * @return The decoded data value
    */
-  def decodeValue(valueOctets: Seq[Byte], classAndPc: ClassAndPC, tag: Int): DataValue = {
+  def decodeValue(classAndPc: ClassAndPC, tag: Int, valueOctets: Seq[Byte]): DataValue = {
     if (classAndPc.isConstructed)
-    // Constructed data value.
-      ???
+      // Constructed data value.
+      BerConstructed.decode(classAndPc, tag, valueOctets)
     else
-    // Primitive data value.
+      // Primitive data value.
       tag match {
         case EndOfContent => BerEndOfContent
         case Boolean => BerBoolean.decode(classAndPc, valueOctets)
@@ -112,7 +119,7 @@ object Ber {
     if (length > lengthTail.length)
       throw new IllegalArgumentException("Insufficient octets provided for specified length")
     val (valueOctets, remainder) = lengthTail.splitAt(length)
-    (decodeValue(valueOctets, classAndPc, tag), remainder)
+    (decodeValue(classAndPc, tag, valueOctets), remainder)
   }
 
 }

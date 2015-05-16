@@ -4,10 +4,10 @@ class BerInteger(classAndPc: ClassAndPC, tag: Int, val value: BigInt) extends Da
   def this(value: BigInt) = this(ClassAndPC(Ber.Universal), Ber.Integer, value)
   override def toBytes = ???
   override def equals(other: Any) = other match {
-    case that: BerInteger => this.value == that.value
+    case that: BerInteger => this.tag == that.tag && this.value == that.value
     case _ => false
   }
-  override def hashCode = (value.hashCode + 41) * 41
+  override def hashCode = 41 * (tag.hashCode + 41) + value.hashCode
   def canEqual(other: Any) = other.isInstanceOf[BerInteger]
   override def toString = s"BerInteger($value)"
 }
