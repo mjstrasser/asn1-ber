@@ -4,16 +4,17 @@ import org.scalatest.FlatSpec
 
 class BerBooleanTest extends FlatSpec {
 
-  val TRUE = true
-  val FALSE = false
+  val falseBytes: Seq[Byte] = Seq(1, 1, 0)
+  val trueBytes: Seq[Byte] = Seq(1, 1, 0xFF.toByte)
 
   "BerBoolean" should "decode a boolean value correctly" in {
+    assert(Ber.decode(falseBytes) == (BerBoolean(value = false), Seq()))
+    assert(Ber.decode(trueBytes) == (BerBoolean(value = true), Seq()))
+  }
 
-    val falseBytes: Seq[Byte] = Seq(1, 1, 0)
-    assert(Ber.decode(falseBytes) == (BerBoolean(FALSE), Seq()))
-
-    val trueBytes: Seq[Byte] = Seq(1, 1, 0xFF.toByte)
-    assert(Ber.decode(trueBytes) == (BerBoolean(TRUE), Seq()))
+  it should "encode a boolean value correctly" in {
+    assert(BerBoolean(value = false).toBytes == falseBytes)
+    assert(BerBoolean(value = true).toBytes == trueBytes)
   }
 
 }

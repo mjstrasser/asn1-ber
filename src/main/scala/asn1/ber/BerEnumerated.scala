@@ -2,7 +2,6 @@ package asn1.ber
 
 class BerEnumerated(classAndPc: ClassAndPC, value: BigInt) extends BerInteger(classAndPc, Ber.Enumerated, value) {
   def this(value: BigInt) = this(ClassAndPC(Ber.Universal), value)
-  override def toBytes = ???
   override def equals(other: Any) = other match {
     case that: BerEnumerated => this.value == that.value
     case _ => false

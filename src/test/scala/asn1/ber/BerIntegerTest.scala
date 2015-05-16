@@ -44,4 +44,9 @@ class BerIntegerTest extends FlatSpec {
       assert(Ber.decode(bytes) == (BerInteger(num), Seq()))
   }
 
+  it should "encode a range of BigInt values" in {
+    for ((num, bytes) <- testData)
+      assert(BerInteger(num).toBytes == bytes)
+  }
+
 }

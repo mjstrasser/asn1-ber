@@ -7,7 +7,12 @@ package asn1.ber
  * @param tag the tag of the data value
  */
 abstract class DataValue(val classAndPc: ClassAndPC, val tag: Int) {
-  def toBytes: Seq[Byte]
+
+  def idBytes: Seq[Byte] = Seq((classAndPc.octet | tag).toByte)
+  def contentBytes: Seq[Byte]
+
+  def toBytes: Seq[Byte] = idBytes ++ contentBytes
+
 }
 
 /**
