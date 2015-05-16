@@ -1,31 +1,18 @@
 package asn1.ber
 
-class ClassAndPC(val byte: Byte) {
-  def this(byteAsInt: Int) = this(byteAsInt.toByte)
-  def isUniversal = (byte & 0xE0) == Ber.Universal
-  def isApplication = (byte & Ber.Private) == Ber.Application
-  def isContextSpecific = (byte & Ber.Private) == Ber.ContextSpecific
-  def isPrivate = (byte & Ber.Private) == Ber.Private
-  def isConstructed = (byte & Ber.Constructed) == Ber.Constructed
-  def isPrimitive = (byte & Ber.Constructed) != Ber.Constructed
-  def toBytes = Seq(byte)
-  override def equals(other: Any) = other match {
-    case that: ClassAndPC => this.byte == that.byte
-    case _ => false
-  }
-  override def hashCode = 41 * (byte.hashCode + 41)
-  def canEqual(other: Any) = other.isInstanceOf[ClassAndPC]
-  override def toString = s"ClassAndPC($byte)"
-}
-
-object ClassAndPC {
-  def apply(idByte: Byte) = new ClassAndPC((idByte & 0xE0).toByte)
-}
-
+/**
+ * Base class for data values.
+ *
+ * @param classAndPc the class and primitive/constructed setting of the data value
+ * @param tag the tag of the data value
+ */
 abstract class DataValue(val classAndPc: ClassAndPC, val tag: Int) {
   def toBytes: Seq[Byte]
 }
 
+/**
+ * Object for decoding and encoding data values using Basic Encoding Rules.
+ */
 object Ber {
 
   val Universal: Byte       = 0x00
