@@ -3,15 +3,13 @@ package asn1.ber
 /**
  * Base class for data values.
  *
- * @param classAndPc the class and primitive/constructed setting of the data value
- * @param tag the tag of the data value
+ * @param identifier identifier: class, primitive/constructed bit and tag
+ *                   of the data value
  */
-abstract class DataValue(val classAndPc: ClassAndPC, val tag: Int) {
+abstract class DataValue(val identifier: Identifier) {
 
-  def idBytes: Seq[Byte] = Seq((classAndPc.octet | tag).toByte)
   def contentBytes: Seq[Byte]
-
-  def toBytes: Seq[Byte] = idBytes ++ contentBytes
+  def toBytes: Seq[Byte] = identifier.toBytes ++ contentBytes
 
 }
 
@@ -50,9 +48,9 @@ object Ber {
    * @return The class and P/C bits from the first octet, the tag number separate from those
    *         and remaining octets
    */
-  def decodeId(idOctets: Seq[Byte]): (ClassAndPC, Int, Seq[Byte]) = {
+  def decodeId(idOctets: Seq[Byte]): (Identifier, Seq[Byte]) = {
     val firstOctet = unsigned(idOctets.head)
-    (ClassAndPC(firstOctet), firstOctet & 0x1F, idOctets.tail)
+    (Identifier((firstOctet & 0xE0).toByte, firstOctet & 0x1F), idOctets.tail)
   }
 
   /**
@@ -79,28 +77,27 @@ object Ber {
   /**
    * Decodes the value octets of a BER-encoded data value.
    *
-   * @param classAndPc Class and primitive/constructed information from the identifier octet(s)
-   * @param tag Tag of this value
+   * @param identifier Class and primitive/constructed information from the identifier octet(s)
    * @param valueOctets Octets containing only the value
    * @return The decoded data value
    */
-  def decodeValue(classAndPc: ClassAndPC, tag: Int, valueOctets: Seq[Byte]): DataValue = {
-    if (classAndPc.isConstructed)
+  def decodeValue(identifier: Identifier, valueOctets: Seq[Byte]): DataValue = {
+    if (identifier.isConstructed)
       // Constructed data value.
-      BerConstructed.decode(classAndPc, tag, valueOctets)
-    else if (classAndPc.isUniversal)
+      BerConstructed.decode(identifier, valueOctets)
+    else if (identifier.isUniversal)
       // Universal, primitive data value.
-      tag match {
+      identifier.tag match {
         case EndOfContent => BerEndOfContent
-        case Boolean => BerBoolean.decode(classAndPc, valueOctets)
-        case Integer => BerInteger.decode(classAndPc, valueOctets)
-        case OctetString => BerOctetString.decode(classAndPc, valueOctets)
+        case Boolean => BerBoolean.decode(valueOctets)
+        case Integer => BerInteger.decode(identifier, valueOctets)
+        case OctetString => BerOctetString.decode(identifier, valueOctets)
         case Null => BerNull
-        case Enumerated => BerEnumerated.decode(classAndPc, valueOctets)
-        case _ => BerBytes(classAndPc, tag, valueOctets)
+        case Enumerated => BerEnumerated.decode(identifier, valueOctets)
+        case _ => BerBytes(identifier, valueOctets)
       }
     else
-      BerBytes(classAndPc, tag, valueOctets)
+      BerBytes(identifier, valueOctets)
   }
 
   /**
@@ -110,12 +107,12 @@ object Ber {
    * @return The decoded data value and any remaining octets
    */
   def decode(octets: Seq[Byte]): (DataValue, Seq[Byte]) = {
-    val (classAndPc, tag, idTail) = decodeId(octets)
+    val (identifier, idTail) = decodeId(octets)
     val (length, lengthTail) = decodeLength(idTail)
     if (length > lengthTail.length)
       throw new IllegalArgumentException("Insufficient octets provided for specified length")
     val (valueOctets, remainder) = lengthTail.splitAt(length)
-    (decodeValue(classAndPc, tag, valueOctets), remainder)
+    (decodeValue(identifier, valueOctets), remainder)
   }
 
 }

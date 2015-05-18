@@ -1,17 +1,19 @@
 package asn1.ber
 
-class BerBytes(classAndPc: ClassAndPC, tag: Int, val value: Seq[Byte]) extends DataValue(classAndPc, tag) {
+class BerBytes(identifier: Identifier, val value: Seq[Byte]) extends DataValue(identifier) {
+
   override def equals(other: Any) = other match {
     case that: BerBytes => this.value == that.value
     case _ => false
   }
   override def hashCode = (value.hashCode + 41) * 41
   def canEqual(other: Any) = other.isInstanceOf[BerBytes]
-  override def toString = s"BerBytes($classAndPc,$tag,$value)"
+  override def toString = s"BerBytes($identifier,$value)"
+
   override def contentBytes = value.length.toByte +: value
 }
 
 object BerBytes {
-  def apply(classAndPc: ClassAndPC, tag: Int, value: Seq[Byte]) = new BerBytes(classAndPc, tag, value)
-  def apply(tag: Int, value: Seq[Byte]) = new BerBytes(ClassAndPC(Ber.Universal), tag, value)
+  def apply(identifier: Identifier, value: Seq[Byte]) = new BerBytes(identifier, value)
+  def apply(tag: Int, value: Seq[Byte]) = new BerBytes(Identifier(Ber.Universal, tag), value)
 }

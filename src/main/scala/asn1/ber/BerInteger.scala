@@ -1,14 +1,16 @@
 package asn1.ber
 
-class BerInteger(classAndPc: ClassAndPC, tag: Int, val value: BigInt) extends DataValue(classAndPc, tag) {
-  def this(value: BigInt) = this(ClassAndPC(Ber.Universal), Ber.Integer, value)
+class BerInteger(identifier: Identifier, val value: BigInt) extends DataValue(identifier) {
+  def this(value: BigInt) = this(Identifier(Ber.Universal, Ber.Integer), value)
+
   override def equals(other: Any) = other match {
-    case that: BerInteger => this.tag == that.tag && this.value == that.value
+    case that: BerInteger => this.identifier == that.identifier && this.value == that.value
     case _ => false
   }
-  override def hashCode = 41 * (tag.hashCode + 41) + value.hashCode
+  override def hashCode = 41 * (identifier.hashCode + 41) + value.hashCode
   def canEqual(other: Any) = other.isInstanceOf[BerInteger]
   override def toString = s"BerInteger($value)"
+
   override def contentBytes = {
 
     // Number of bytes required to represent this integer.
@@ -65,6 +67,6 @@ object BerInteger {
     if (negative) (unsigned + 1) * -1 else unsigned
   }
 
-  def decode(classAndPC: ClassAndPC, valueOctets: Seq[Byte]): DataValue =
-    new BerInteger(classAndPC, Ber.Integer, decodeValue(valueOctets))
+  def decode(identifier: Identifier, valueOctets: Seq[Byte]): DataValue =
+    new BerInteger(identifier, decodeValue(valueOctets))
 }

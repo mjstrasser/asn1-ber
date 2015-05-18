@@ -1,7 +1,8 @@
 package asn1.ber
 
-class BerEnumerated(classAndPc: ClassAndPC, value: BigInt) extends BerInteger(classAndPc, Ber.Enumerated, value) {
-  def this(value: BigInt) = this(ClassAndPC(Ber.Universal), value)
+class BerEnumerated(identifier: Identifier, value: BigInt) extends BerInteger(identifier, value) {
+  def this(value: BigInt) = this(Identifier(Ber.Universal, Ber.Enumerated), value)
+
   override def equals(other: Any) = other match {
     case that: BerEnumerated => this.value == that.value
     case _ => false
@@ -15,6 +16,6 @@ object BerEnumerated {
 
   def apply(value: Int) = new BerEnumerated(value)
 
-  def decode(classAndPC: ClassAndPC, valueOctets: Seq[Byte]) =
-    new BerEnumerated(classAndPC, BerInteger.decodeValue(valueOctets))
+  def decode(identifier: Identifier, valueOctets: Seq[Byte]) =
+    new BerEnumerated(identifier, BerInteger.decodeValue(valueOctets))
 }

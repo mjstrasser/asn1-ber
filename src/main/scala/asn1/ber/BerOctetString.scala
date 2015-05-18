@@ -1,7 +1,8 @@
 package asn1.ber
 
-class BerOctetString(classAndPc: ClassAndPC, tag: Int, val value: String) extends DataValue(classAndPc, tag) {
-  def this(value: String) = this(ClassAndPC(Ber.Universal), Ber.OctetString, value)
+class BerOctetString(identifier: Identifier, val value: String) extends DataValue(identifier) {
+  def this(value: String) = this(Identifier(Ber.Universal, Ber.OctetString), value)
+
   override def equals(other: Any) = other match {
     case that: BerOctetString => this.value == that.value
     case _ => false
@@ -23,10 +24,7 @@ object BerOctetString {
   def apply(value: String) = new BerOctetString(value)
 
 
-  def decode(classAndPc: ClassAndPC, tag: Int, valueOctets: Seq[Byte]): DataValue =
-    new BerOctetString(classAndPc, tag, valueOctets.map(_.toChar).mkString)
-
-  def decode(classAndPc: ClassAndPC, valueOctets: Seq[Byte]): DataValue =
-    decode(classAndPc, Ber.OctetString, valueOctets)
+  def decode(identifier: Identifier, valueOctets: Seq[Byte]): DataValue =
+    new BerOctetString(identifier, valueOctets.map(_.toChar).mkString)
 
 }

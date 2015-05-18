@@ -7,7 +7,7 @@ class BerConstructedTest extends FlatSpec {
   val seqBytes = Seq(48, 6,
     1, 1, 0,
     2, 1, 12).map(_.toByte)
-  val seqBer = BerConstructed(ClassAndPC(Ber.Constructed), 16, Seq(
+  val seqBer = BerSequence(Seq(
     BerBoolean(value = false),
     BerInteger(12)
   ))
@@ -19,12 +19,12 @@ class BerConstructedTest extends FlatSpec {
     2, 1, 3,
     4, 9, 111, 61, 84, 101, 108, 115, 116, 114, 97,
     128, 3, 101, 115, 115).map(_.toByte)
-  val ldapBindRequestBer = BerConstructed(ClassAndPC(Ber.Constructed), 16, Seq(
+  val ldapBindRequestBer = BerSequence(Seq(
     BerInteger(1),
-    BerConstructed(ClassAndPC(Ber.AppConstructed), 0, Seq(
+    BerConstructed(Identifier(Ber.AppConstructed, 0), Seq(
       BerInteger(3),
       BerOctetString("o=Telstra"),
-      BerBytes(ClassAndPC(Ber.ContextSpecific), 0, List(101, 115, 115))
+      BerBytes(Identifier(Ber.ContextSpecific, 0), Seq(101, 115, 115).map(_.toByte))
     ))
   ))
 

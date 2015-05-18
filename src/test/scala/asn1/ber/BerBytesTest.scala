@@ -18,7 +18,7 @@ class BerBytesTest extends FlatSpec {
 
   it should "encode bytes correctly" in {
     assert(BerBytes(unknownTag, Seq()).toBytes == Seq(unknownTag, 0))
-    assert(BerBytes(unknownTag, Seq(15)).toBytes == Seq(unknownTag, 1, 15))
-    assert(BerBytes(unknownTag, Seq(1, 2, 3, 5, 8, 13)).toBytes == Seq(unknownTag, 6, 1, 2, 3, 5, 8, 13))
+    assert(BerBytes(unknownTag, Seq(15).map(_.toByte)).toBytes == Seq(unknownTag, 1, 15))
+    assert(BerBytes(unknownTag, Seq(1, 2, 3, 5, 8, 13).map(_.toByte)).toBytes == Seq(unknownTag, 6, 1, 2, 3, 5, 8, 13))
   }
 }
