@@ -7,7 +7,7 @@ lazy val commonSettings = Seq(
 lazy val root = (project in file(".")).
   settings(commonSettings: _*).
   settings(
-    name := "ASN1. BER library in Scala"
+    name := "ASN.1 BER library in Scala"
   )
 
 libraryDependencies ++= {
