@@ -22,9 +22,9 @@ The identifier octets specify information about:
  - whether it is primitive or constructed (next highest bit of the first octet)
  - an integer tag that specifies what kind of value is encoded
  
-If the tag is less than 32 it is in the lowest five bits of the first octet. This means there is only one identifier octet.
+If the tag is less than 31 it is in the lowest five bits of the first octet. This means there is only one identifier octet.
 
-**Currently the library only supports a single identifier octet: i.e. tag values up to 31.**
+**Currently the library only supports a single identifier octet: i.e. tag values up to 30.**
 
 ### Length octets
 
@@ -32,7 +32,7 @@ The length octets specify how many following octets contain the encoded value.
 
 For a constructed data type, the length is the sum of the lengths of all contained data values, including their identifier and length octets.
 
-**Currently the library only supports a single length octet: i.e. lengths up to 127.**
+**Currently the library only supports a single length octet: i.e. lengths up to 126.**
 
 ### Value octets
 

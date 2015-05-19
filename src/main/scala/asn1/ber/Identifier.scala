@@ -28,7 +28,7 @@ class Identifier(val classAndPC: Byte, val tag: Int) {
   }
   override def hashCode = 41 * (41 * (classAndPC.hashCode + 41) + tag.hashCode)
   def canEqual(other: Any) = other.isInstanceOf[Identifier]
-  override def toString = s"Identifier($classAndPC,$tag)"
+  override def toString = s"Identifier($classAndPC, $tag)"
 }
 
 object Identifier {

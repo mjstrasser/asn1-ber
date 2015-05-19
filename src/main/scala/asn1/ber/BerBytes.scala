@@ -8,7 +8,7 @@ class BerBytes(identifier: Identifier, val value: Seq[Byte]) extends DataValue(i
   }
   override def hashCode = (value.hashCode + 41) * 41
   def canEqual(other: Any) = other.isInstanceOf[BerBytes]
-  override def toString = s"BerBytes($identifier,$value)"
+  override def toString = s"BerBytes($identifier, $value)"
 
   override def contentBytes = value.length.toByte +: value
 }

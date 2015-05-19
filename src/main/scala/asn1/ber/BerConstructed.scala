@@ -8,7 +8,7 @@ class BerConstructed(identifier: Identifier, val value: Seq[DataValue]) extends 
   }
   override def hashCode = 41 * (41 * identifier.hashCode) + value.hashCode
   def canEqual(other: Any) = other.isInstanceOf[BerConstructed]
-  override def toString = s"BerConstructed($identifier,$value)"
+  override def toString = s"BerConstructed($identifier, $value)"
   override def contentBytes = {
     def gatherContents(contents: Seq[DataValue], accLength: Int, accBytes: Seq[Byte]): (Int, Seq[Byte]) = {
       if (contents.isEmpty)
@@ -25,7 +25,7 @@ class BerConstructed(identifier: Identifier, val value: Seq[DataValue]) extends 
 
 object BerConstructed {
 
-  def apply(identifier: Identifier, value: Seq[DataValue]): DataValue =
+  def apply(identifier: Identifier, value: DataValue*): DataValue =
     new BerConstructed(identifier, value)
 
   def appendBer(octets: Seq[Byte], berSeq: Seq[DataValue]): Seq[DataValue] = {

@@ -14,7 +14,7 @@ class BerSequence(value: Seq[DataValue]) extends BerConstructed(Identifier(Ber.C
 
 object BerSequence {
 
-  def apply(value: Seq[DataValue]): DataValue = new BerSequence(value)
+  def apply(value: DataValue*): DataValue = new BerSequence(value)
 
   def decode(value: Seq[Byte]): DataValue = new BerSequence(BerConstructed.appendBer(value, Seq()))
 
