@@ -25,7 +25,7 @@ class BerConstructed(identifier: Identifier, val value: Seq[DataValue]) extends 
 
 object BerConstructed {
 
-  def apply(identifier: Identifier, value: DataValue*): DataValue =
+  def apply(identifier: Identifier, value: DataValue*) =
     new BerConstructed(identifier, value)
 
   def appendBer(octets: Seq[Byte], berSeq: Seq[DataValue]): Seq[DataValue] = {
