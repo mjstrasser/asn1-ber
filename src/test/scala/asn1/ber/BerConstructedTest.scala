@@ -24,7 +24,7 @@ class BerConstructedTest extends FlatSpec {
     BerConstructed(Identifier(Ber.AppConstructed, 0),
       BerInteger(3),
       BerOctetString("o=Telstra"),
-      BerBytes(Identifier(Ber.ContextSpecific, 0), Seq(101, 115, 115).map(_.toByte))
+      BerBytes(Identifier(Ber.ContextSpecific, 0), "ess".getBytes)
     )
   )
 

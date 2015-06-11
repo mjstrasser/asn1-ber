@@ -2,9 +2,31 @@
 
 This library decodes ASN.1 data values encoded using BER into objects that can be used by programs, e.g. an LDAP client or server.
  
-**This library is not complete.** I am writing it as a way of learning Scala and functional programming.
+**This library is not complete.** I am writing it as a way of learning Scala and functional programming. I plan to add features and improve the code over time.
 
-Use it at your own risk!
+## How to use it
+
+Use this library at your own risk!
+
+### Decoding
+
+Given one or more BER objects in a sequence of bytes, call `Ber.decode` to return one data value instance and a sequence of remaining bytes.
+
+### Encoding
+
+Construct the data value you need and call its toBytes method. For example, to encode an LDAP **Bind** message you could use:
+
+```scala
+val bindRequestMessage = BerSequence(
+  BerInteger(1),
+  BerConstructed(Identifier(Ber.AppConstructed, 0),
+    BerInteger(3),
+    BerOctetString("cn=James,dc=here,o=home"),
+    BerBytes(Identifier(Ber.ContextSpecific, 0), "password".getBytes)
+  )
+)
+bindRequestMessage.toBytes
+```
 
 ## Design concepts
 
